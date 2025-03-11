@@ -6,8 +6,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
-import vectorwing.farmersdelight.common.block.WildCropBlock;
 
 public class GossypiumFlowerBlock extends FlowerBlock {
     public GossypiumFlowerBlock(Properties properties) {

@@ -1,4 +1,4 @@
-package com.sammy.minersdelight.data;
+package com.sammy.minersdelight.datagen;
 
 import com.sammy.minersdelight.*;
 import com.sammy.minersdelight.setup.*;
@@ -6,17 +6,13 @@ import net.minecraft.data.*;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.*;
-import net.minecraftforge.common.*;
+import net.neoforged.common.*;
 import vectorwing.farmersdelight.client.recipebook.*;
 import vectorwing.farmersdelight.common.registry.*;
-import vectorwing.farmersdelight.common.tag.*;
 import vectorwing.farmersdelight.data.builder.*;
 
 import java.util.function.*;
 
-import static net.minecraft.data.recipes.ShapedRecipeBuilder.*;
-import static net.minecraft.data.recipes.ShapelessRecipeBuilder.*;
-import static net.minecraft.data.recipes.SimpleCookingRecipeBuilder.*;
 import static vectorwing.farmersdelight.data.recipe.CookingRecipes.*;
 
 public class MDRecipeProvider extends RecipeProvider {

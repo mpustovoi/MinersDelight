@@ -2,7 +2,6 @@ package com.sammy.minersdelight.jei;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sammy.minersdelight.MinersDelightMod;
-import com.sammy.minersdelight.logic.*;
 import com.sammy.minersdelight.setup.MDBlocks;
 import com.sammy.minersdelight.setup.MDItems;
 import mezz.jei.api.constants.VanillaTypes;

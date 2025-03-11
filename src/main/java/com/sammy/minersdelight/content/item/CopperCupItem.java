@@ -75,7 +75,7 @@ public class CopperCupItem extends Item implements DispensibleContainerItem {
    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
       ItemStack itemstack = pPlayer.getItemInHand(pHand);
       BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, this.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
-      InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(pPlayer, pLevel, itemstack, blockhitresult);
+      InteractionResultHolder<ItemStack> ret = net.neoforged.event.ForgeEventFactory.onBucketUse(pPlayer, pLevel, itemstack, blockhitresult);
       if (ret != null) return ret;
       if (blockhitresult.getType() == HitResult.Type.MISS) {
          return InteractionResultHolder.pass(itemstack);
@@ -188,9 +188,9 @@ public class CopperCupItem extends Item implements DispensibleContainerItem {
    }
 
    @Override
-   public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundTag nbt) {
+   public net.neoforged.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.CompoundTag nbt) {
       if (this.getClass() == CopperCupItem.class)
-         return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
+         return new net.neoforged.fluids.capability.wrappers.FluidBucketWrapper(stack);
       else
          return super.initCapabilities(stack, nbt);
    }

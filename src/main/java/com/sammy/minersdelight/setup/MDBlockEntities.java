@@ -1,19 +1,14 @@
 package com.sammy.minersdelight.setup;
 
 import com.sammy.minersdelight.*;
-import com.sammy.minersdelight.content.block.copper_pot.*;
 import com.sammy.minersdelight.content.block.sticky_basket.*;
-import com.tterrag.registrate.util.entry.*;
+import net.minecraft.core.registries.*;
+import net.minecraft.world.level.block.entity.*;
+import net.neoforged.neoforge.registries.*;
 
 public class MDBlockEntities {
+    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MinersDelightMod.MODID);
 
-    public static final BlockEntityEntry<CopperPotBlockEntity> COPPER_POT =
-            MinersDelightMod.registrate().blockEntity("copper_pot", CopperPotBlockEntity::new).validBlocks(MDBlocks.COPPER_POT).register();
-
-    public static final BlockEntityEntry<StickyBasketBlockEntity> STICKY_BASKET =
-            MinersDelightMod.registrate().blockEntity("sticky_basket", StickyBasketBlockEntity::new).validBlocks(MDBlocks.STICKY_BASKET).register();
-
-
-    public static void register() {
-    }
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StickyBasketBlockEntity>> STICKY_BASKET = TILES.register("sticky_basket",
+            () -> BlockEntityType.Builder.of(StickyBasketBlockEntity::new, MDBlocks.STICKY_BASKET.get()).build(null));
 }

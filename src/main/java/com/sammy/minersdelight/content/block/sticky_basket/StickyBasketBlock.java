@@ -1,13 +1,12 @@
 package com.sammy.minersdelight.content.block.sticky_basket;
 
 import com.google.common.collect.*;
+import com.mojang.serialization.*;
 import com.sammy.minersdelight.setup.*;
 import net.minecraft.core.*;
 import net.minecraft.world.*;
-import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.*;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.*;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
@@ -23,13 +22,14 @@ import javax.annotation.*;
 
 public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 {
+    public static final MapCodec<StickyBasketBlock> CODEC = simpleCodec(StickyBasketBlock::new);
+
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public static final VoxelShape OUT_SHAPE = Shapes.block();
     public static final VoxelShape RENDER_SHAPE = box(1.0D, 1.0D, 1.0D, 15.0D, 15.0D, 15.0D);
-
     public static final ImmutableMap<Direction, VoxelShape> COLLISION_SHAPE_FACING =
             Maps.immutableEnumMap(ImmutableMap.<Direction, VoxelShape>builder()
                     .put(Direction.DOWN, makeHollowCubeShape(box(2.0D, 0.0D, 2.0D, 14.0D, 14.0D, 14.0D)))
@@ -47,6 +47,11 @@ public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterlog
     public StickyBasketBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.UP).setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -70,8 +75,14 @@ public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        return InteractionResult.PASS;
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide) {
+            BlockEntity tileEntity = level.getBlockEntity(pos);
+            if (tileEntity instanceof StickyBasketBlockEntity) {
+                player.openMenu((StickyBasketBlockEntity) tileEntity);
+            }
+        }
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -84,17 +95,6 @@ public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterlog
             }
 
             super.onRemove(state, level, pos, newState, isMoving);
-        }
-    }
-
-    @Override
-    public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        if (pEntity instanceof LivingEntity livingEntity) {
-            Vec3 motion = livingEntity.getDeltaMovement();
-            if (livingEntity instanceof Player player && player.isCrouching()) {
-                return;
-            }
-            pEntity.setDeltaMovement(new Vec3(motion.x, -0.05f, motion.z));
         }
     }
 
@@ -134,16 +134,6 @@ public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (stack.hasCustomHoverName()) {
-            BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof StickyBasketBlockEntity) {
-                ((StickyBasketBlockEntity) tileEntity).setCustomName(stack.getHoverName());
-            }
-        }
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         FluidState fluid = context.getLevel().getFluidState(context.getClickedPos());
         return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite()).setValue(WATERLOGGED, fluid.getType() == Fluids.WATER);
@@ -169,14 +159,14 @@ public class StickyBasketBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
         return false;
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return MDBlockEntities.STICKY_BASKET.get().create(pos, state);
+        return new StickyBasketBlockEntity(pos, state);
     }
 
     @Nullable

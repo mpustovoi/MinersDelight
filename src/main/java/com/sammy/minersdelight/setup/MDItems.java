@@ -2,108 +2,103 @@ package com.sammy.minersdelight.setup;
 
 import com.sammy.minersdelight.*;
 import com.sammy.minersdelight.content.item.*;
-import com.tterrag.registrate.*;
-import com.tterrag.registrate.builders.*;
-import com.tterrag.registrate.util.entry.*;
-import com.tterrag.registrate.util.nullness.*;
+import net.minecraft.core.registries.*;
 import net.minecraft.sounds.*;
 import net.minecraft.world.food.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.*;
-import net.minecraftforge.registries.*;
-import org.jetbrains.annotations.*;
+import net.neoforged.neoforge.registries.*;
+import team.lodestar.lodestone.systems.item.*;
 import vectorwing.farmersdelight.common.*;
 import vectorwing.farmersdelight.common.item.*;
-import vectorwing.farmersdelight.common.tag.*;
+
+import java.util.function.*;
 
 import static com.sammy.minersdelight.MinersDelightMod.*;
 
 public class MDItems {
-    public static final Registrate ITEM_REGISTRATE = MinersDelightMod.registrate().creativeModeTab(MinersDelightTab::get);
 
-    public static final ItemEntry<CopperCupItem> COPPER_CUP = setupItem("copper_cup", (p) -> new CopperCupItem(Fluids.EMPTY, p.stacksTo(16))).register();
-    public static final ItemEntry<CopperCupItem> WATER_CUP = setupItem("water_cup", (p) -> new CopperCupItem(Fluids.WATER, p.stacksTo(1).craftRemainder(COPPER_CUP.get()))).register();
-    public static final ItemEntry<MilkCupItem> MILK_CUP = setupItem("milk_cup", MilkCupItem::new).tag(ForgeTags.MILK).properties(p -> p.stacksTo(1).craftRemainder(COPPER_CUP.get())).register();
-    public static final ItemEntry<SolidCupItem> POWDERED_SNOW_CUP = setupItem("powder_snow_cup", (p) -> new SolidCupItem(Blocks.POWDER_SNOW, SoundEvents.BUCKET_EMPTY_POWDER_SNOW, p.stacksTo(1).craftRemainder(COPPER_CUP.get()))).register();
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
 
-    public static final ItemEntry<ItemNameBlockItem> CAVE_CARROT = setupItem("cave_carrot", MDFoodValues.CAVE_CARROT, p -> new ItemNameBlockItem(MDBlocks.CAVE_CARROTS.get(), p)).register();
-    public static final ItemEntry<Item> BAKED_CAVE_CARROT = setupItem("baked_cave_carrot", MDFoodValues.BAKED_CAVE_CARROT).register();
-
-    public static final ItemEntry<Item> BAT_WING = setupItem("bat_wing", MDFoodValues.BAT_WING).register();
-    public static final ItemEntry<Item> SMOKED_BAT_WING = setupItem("smoked_bat_wing", MDFoodValues.SMOKED_BAT_WING).register();
-
-    public static final ItemEntry<SilverfishEggsItem> SILVERFISH_EGGS = setupItem("silverfish_eggs", MDFoodValues.SILVERFISH_EGGS, SilverfishEggsItem::new).register();
-    public static final ItemEntry<ConsumableItem> WEIRD_CAVIAR = setupBowlFoodItem("weird_caviar", MDFoodValues.WEIRD_CAVIAR).register();
-
-    public static final ItemEntry<Item> SQUID = setupItem("squid", MDFoodValues.SQUID).register();
-    public static final ItemEntry<Item> GLOW_SQUID = setupItem("glow_squid", MDFoodValues.GLOW_SQUID).register();
-    public static final ItemEntry<Item> BAKED_SQUID = setupItem("baked_squid", MDFoodValues.BAKED_SQUID).register();
-    public static final ItemEntry<Item> TENTACLES = setupItem("tentacles", MDFoodValues.TENTACLES).register();
-    public static final ItemEntry<Item> BAKED_TENTACLES = setupItem("baked_tentacles", MDFoodValues.BAKED_TENTACLES).register();
-    public static final ItemEntry<Item> IMPROVISED_BARBECUE_STICK = setupItem("improvised_barbecue_stick", MDFoodValues.IMPROVISED_BARBECUE_STICK).register();
-    public static final ItemEntry<Item> PASTA_WITH_VEGGIEBALLS = setupItem("pasta_with_veggieballs", MDFoodValues.PASTA_WITH_VEGGIEBALLS).properties(p -> p.stacksTo(16)).register();
-    public static final ItemEntry<ConsumableItem> CAVE_SOUP = setupBowlFoodItem("cave_soup", MDFoodValues.CAVE_SOUP).register();
-    public static final ItemEntry<ConsumableItem> BOWL_OF_STUFFED_SQUID = setupBowlFoodItem("bowl_of_stuffed_squid", MDFoodValues.BOWL_OF_STUFFED_SQUID).register();
-
-    public static final ItemEntry<CopperCupFoodItem> BEETROOT_SOUP_CUP = setupCupFoodItem("beetroot_soup_cup", MDFoodValues.BEETROOT_SOUP).register();
-    public static final ItemEntry<CopperCupFoodItem> MUSHROOM_STEW_CUP = setupCupFoodItem("mushroom_stew_cup", MDFoodValues.MUSHROOM_STEW).register();
-    public static final ItemEntry<CopperCupFoodItem> RABBIT_STEW_CUP = setupCupFoodItem("rabbit_stew_cup", MDFoodValues.RABBIT_STEW).register();
-
-    public static final ItemEntry<CopperCupFoodItem> BAKED_COD_STEW_CUP = setupCupFoodItem("baked_cod_stew_cup", FoodValues.BAKED_COD_STEW).register();
-    public static final ItemEntry<CopperCupFoodItem> NOODLE_SOUP_CUP = setupCupFoodItem("noodle_soup_cup", FoodValues.NOODLE_SOUP).register();
-    public static final ItemEntry<CopperCupFoodItem> BEEF_STEW_CUP = setupCupFoodItem("beef_stew_cup", FoodValues.BEEF_STEW).register();
-    public static final ItemEntry<CopperCupFoodItem> CAVE_SOUP_CUP = setupCupFoodItem("cave_soup_cup", MDFoodValues.CAVE_SOUP).register();
-    public static final ItemEntry<CopperCupFoodItem> CHICKEN_SOUP_CUP = setupCupFoodItem("chicken_soup_cup", FoodValues.CHICKEN_SOUP).register();
-    public static final ItemEntry<CopperCupFoodItem> FISH_STEW_CUP = setupCupFoodItem("fish_stew_cup", FoodValues.FISH_STEW).register();
-    public static final ItemEntry<HotCocoaCupItem> HOT_COCOA_CUP = setupCupFoodItem("hot_cocoa_cup", HotCocoaCupItem::new).properties(p -> p.food(MDFoodValues.HOT_COCOA)).register();
-    public static final ItemEntry<CopperCupFoodItem> PUMPKIN_SOUP_CUP = setupCupFoodItem("pumpkin_soup_cup", FoodValues.PUMPKIN_SOUP).register();
-    public static final ItemEntry<CopperCupFoodItem> VEGETABLE_SOUP_CUP = setupCupFoodItem("vegetable_soup_cup", FoodValues.VEGETABLE_SOUP).register();
-
-    public static ItemBuilder<CopperCupFoodItem, Registrate> setupCupFoodItem(String name, FoodProperties foodProperties) {
-        return setupCupFoodItem(name, CopperCupFoodItem::new).properties(p -> p.food(MDFoodValues.copyAndAddHaste(foodProperties)));
+    public static LodestoneItemProperties DEFAULT_PROPERTIES() {
+        return new LodestoneItemProperties(MDCreativeTabs.CONTENT);
     }
 
-    public static <T extends Item> ItemBuilder<T, Registrate> setupCupFoodItem(String name, NonNullFunction<Item.Properties, T> factory) {
-        return ITEM_REGISTRATE.item(name, factory).properties((p) -> p.craftRemainder(COPPER_CUP.get()).stacksTo(16));
+    public static LodestoneItemProperties BOWL_PROPERTIES() {
+        return DEFAULT_PROPERTIES().stacksTo(16).craftRemainder(Items.BOWL);
     }
 
-    public static ItemBuilder<ConsumableItem, Registrate> setupBowlFoodItem(String name, FoodProperties foodProperties) {
-        return setupBowlFoodItem(name, p -> new ConsumableItem(p, true)).properties(p -> p.food(foodProperties));
+    public static LodestoneItemProperties CUP_PROPERTIES() {
+        return DEFAULT_PROPERTIES().stacksTo(16);
     }
 
-    public static <T extends Item> ItemBuilder<T, Registrate> setupBowlFoodItem(String name, NonNullFunction<Item.Properties, T> factory) {
-        return ITEM_REGISTRATE.item(name, factory).properties((p) -> p.craftRemainder(Items.BOWL).stacksTo(16));
+    public static DeferredHolder<Item, Item> register(String name, FoodProperties foodProperties) {
+        return register(name, foodProperties, Item::new);
     }
 
-    public static <T extends Item> ItemBuilder<T, Registrate> setupItem(String name, FoodProperties foodProperties, NonNullFunction<Item.Properties, T> factory) {
-        return setupItem(name, factory).properties(p -> p.food(foodProperties));
-    }
-    public static ItemBuilder<Item, Registrate> setupItem(String name, FoodProperties foodProperties) {
-        return setupItem(name, Item::new).properties(p -> p.food(foodProperties));
+    public static DeferredHolder<Item, CopperCupFoodItem> registerCupFood(String name, FoodProperties foodProperties) {
+        return register(name, CUP_PROPERTIES().food(MDFoodValues.copyAndAddHaste(foodProperties)), p -> new CopperCupFoodItem(p.craftRemainder(COPPER_CUP.get())));
     }
 
-    public static <T extends Item> ItemBuilder<T, Registrate> setupItem(String name, NonNullFunction<Item.Properties, T> factory) {
-        return ITEM_REGISTRATE.item(name, factory);
+    public static <T extends Item> DeferredHolder<Item, T> register(String name, FoodProperties foodProperties, Function<LodestoneItemProperties, T> function) {
+        return register(name, DEFAULT_PROPERTIES().food(foodProperties), function);
     }
 
-    public static void register() {
+    public static <T extends Item> DeferredHolder<Item, T> register(String name, Function<LodestoneItemProperties, T> function) {
+        return register(name, DEFAULT_PROPERTIES(), function);
     }
 
-    public static class MinersDelightTab extends CreativeModeTab {
-        public static final MinersDelightTab INSTANCE = new MinersDelightTab();
-
-        public static @NotNull MinersDelightTab get() {
-            return INSTANCE;
-        }
-
-        public MinersDelightTab() {
-            super(MODID);
-        }
-
-        @Override
-        public @NotNull ItemStack makeIcon() {
-            return ITEM_REGISTRATE.get("copper_pot", ForgeRegistries.ITEMS.getRegistryKey()).get().getDefaultInstance();
-        }
+    public static <T extends Item> DeferredHolder<Item, T> register(String name, LodestoneItemProperties properties, Function<LodestoneItemProperties, T> function) {
+        LodestoneItemProperties.addToTabSorting(MinersDelightMod.path(name), properties);
+        return ITEMS.register(name, () -> function.apply(properties));
     }
+
+    public static ConsumableItem bowlItem(Item.Properties properties) {
+        return new ConsumableItem(properties, true);
+    }
+
+    public static CopperCupFoodItem cupItem(Item.Properties properties) {
+        return new CopperCupFoodItem(properties);
+    }
+
+    public static final DeferredHolder<Item, CopperCupItem> COPPER_CUP = register("copper_cup", CUP_PROPERTIES(), (p) -> new CopperCupItem(Fluids.EMPTY, p));
+    public static final DeferredHolder<Item, CopperCupItem> WATER_CUP = register("water_cup", CUP_PROPERTIES().stacksTo(1), (p) -> new CopperCupItem(Fluids.WATER, p));
+    public static final DeferredHolder<Item, MilkCupItem> MILK_CUP = register("milk_cup", CUP_PROPERTIES().stacksTo(1), MilkCupItem::new);
+    public static final DeferredHolder<Item, SolidCupItem> POWDERED_SNOW_CUP = register("powder_snow_cup", CUP_PROPERTIES().stacksTo(1), (p) -> new SolidCupItem(Blocks.POWDER_SNOW, SoundEvents.BUCKET_EMPTY_POWDER_SNOW, p));
+
+    public static final DeferredHolder<Item, ItemNameBlockItem> CAVE_CARROT = register("cave_carrot", MDFoodValues.CAVE_CARROT, p -> new ItemNameBlockItem(MDBlocks.CAVE_CARROTS.get(), p));
+    public static final DeferredHolder<Item, Item> BAKED_CAVE_CARROT = register("baked_cave_carrot", MDFoodValues.BAKED_CAVE_CARROT);
+    public static final DeferredHolder<Item, Item> GOSSYPIUM = register("baked_cave_carrot", p -> new BlockItem(MDBlocks.GOSSYPIUM.get(), p));
+
+    public static final DeferredHolder<Item, Item> BAT_WING = register("bat_wing", MDFoodValues.BAT_WING);
+    public static final DeferredHolder<Item, Item> SMOKED_BAT_WING = register("smoked_bat_wing", MDFoodValues.SMOKED_BAT_WING);
+
+    public static final DeferredHolder<Item, SilverfishEggsItem> SILVERFISH_EGGS = register("silverfish_eggs", MDFoodValues.SILVERFISH_EGGS, SilverfishEggsItem::new);
+    public static final DeferredHolder<Item, ConsumableItem> WEIRD_CAVIAR = register("weird_caviar", MDFoodValues.WEIRD_CAVIAR, ConsumableItem::new);
+
+    public static final DeferredHolder<Item, Item> SQUID = register("squid", MDFoodValues.SQUID);
+    public static final DeferredHolder<Item, Item> GLOW_SQUID = register("glow_squid", MDFoodValues.GLOW_SQUID);
+    public static final DeferredHolder<Item, Item> BAKED_SQUID = register("baked_squid", MDFoodValues.BAKED_SQUID);
+    public static final DeferredHolder<Item, Item> TENTACLES = register("tentacles", MDFoodValues.TENTACLES);
+    public static final DeferredHolder<Item, Item> BAKED_TENTACLES = register("baked_tentacles", MDFoodValues.BAKED_TENTACLES);
+    public static final DeferredHolder<Item, Item> IMPROVISED_BARBECUE_STICK = register("improvised_barbecue_stick", MDFoodValues.IMPROVISED_BARBECUE_STICK);
+    public static final DeferredHolder<Item, Item> PASTA_WITH_VEGGIEBALLS = register("pasta_with_veggieballs", MDFoodValues.PASTA_WITH_VEGGIEBALLS);
+
+    public static final DeferredHolder<Item, ConsumableItem> CAVE_SOUP = register("cave_soup", MDFoodValues.CAVE_SOUP, MDItems::bowlItem);
+    public static final DeferredHolder<Item, ConsumableItem> BOWL_OF_STUFFED_SQUID = register("bowl_of_stuffed_squid", MDFoodValues.BOWL_OF_STUFFED_SQUID, MDItems::bowlItem);
+
+    public static final DeferredHolder<Item, CopperCupFoodItem> BEETROOT_SOUP_CUP = registerCupFood("beetroot_soup_cup", MDFoodValues.BEETROOT_SOUP);
+    public static final DeferredHolder<Item, CopperCupFoodItem> MUSHROOM_STEW_CUP = registerCupFood("mushroom_stew_cup", MDFoodValues.MUSHROOM_STEW);
+    public static final DeferredHolder<Item, CopperCupFoodItem> RABBIT_STEW_CUP = registerCupFood("rabbit_stew_cup", MDFoodValues.RABBIT_STEW);
+
+    public static final DeferredHolder<Item, CopperCupFoodItem> BAKED_COD_STEW_CUP = registerCupFood("baked_cod_stew_cup", FoodValues.BAKED_COD_STEW);
+    public static final DeferredHolder<Item, CopperCupFoodItem> NOODLE_SOUP_CUP = registerCupFood("noodle_soup_cup", FoodValues.NOODLE_SOUP);
+    public static final DeferredHolder<Item, CopperCupFoodItem> BEEF_STEW_CUP = registerCupFood("beef_stew_cup", FoodValues.BEEF_STEW);
+    public static final DeferredHolder<Item, CopperCupFoodItem> CAVE_SOUP_CUP = registerCupFood("cave_soup_cup", MDFoodValues.CAVE_SOUP);
+    public static final DeferredHolder<Item, CopperCupFoodItem> CHICKEN_SOUP_CUP = registerCupFood("chicken_soup_cup", FoodValues.CHICKEN_SOUP);
+    public static final DeferredHolder<Item, CopperCupFoodItem> FISH_STEW_CUP = registerCupFood("fish_stew_cup", FoodValues.FISH_STEW);
+    public static final DeferredHolder<Item, HotCocoaCupItem> HOT_COCOA_CUP = register("hot_cocoa_cup", MDFoodValues.HOT_COCOA, p -> new HotCocoaCupItem(p.stacksTo(16)));
+    public static final DeferredHolder<Item, CopperCupFoodItem> PUMPKIN_SOUP_CUP = registerCupFood("pumpkin_soup_cup", FoodValues.PUMPKIN_SOUP);
+    public static final DeferredHolder<Item, CopperCupFoodItem> VEGETABLE_SOUP_CUP = registerCupFood("vegetable_soup_cup", FoodValues.VEGETABLE_SOUP);
 }

@@ -1,5 +1,6 @@
 package com.sammy.minersdelight.content.block.sticky_basket;
 
+import com.sammy.minersdelight.setup.*;
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.*;
@@ -16,8 +17,8 @@ import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.shapes.*;
 import vectorwing.farmersdelight.common.block.*;
 import vectorwing.farmersdelight.common.block.entity.*;
-import vectorwing.farmersdelight.common.utility.*;
 
+import javax.annotation.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -27,25 +28,25 @@ public class StickyBasketBlockEntity extends RandomizableContainerBlockEntity im
     private NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
     private int transferCooldown = -1;
 
-    public StickyBasketBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public StickyBasketBlockEntity(BlockPos pos, BlockState state) {
+        super(MDBlockEntities.STICKY_BASKET.get(), pos, state);
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(compound)) {
-            ContainerHelper.loadAllItems(compound, this.items);
+            ContainerHelper.loadAllItems(compound, this.items, registries);
         }
         this.transferCooldown = compound.getInt("TransferCooldown");
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         if (!this.trySaveLootTable(compound)) {
-            ContainerHelper.saveAllItems(compound, this.items);
+            ContainerHelper.saveAllItems(compound, this.items, registries);
         }
 
         compound.putInt("TransferCooldown", this.transferCooldown);
@@ -73,7 +74,7 @@ public class StickyBasketBlockEntity extends RandomizableContainerBlockEntity im
 
     @Override
     protected Component getDefaultName() {
-        return TextUtils.getTranslation("container.basket");
+        return Component.translatable("minersdelight.container.sticky_basket");
     }
 
     public static boolean pullItems(Level level, Basket basket, int facingIndex) {
@@ -95,24 +96,13 @@ public class StickyBasketBlockEntity extends RandomizableContainerBlockEntity im
         return stack;
     }
 
-    private static boolean canInsertItemInSlot(Container inventoryIn, ItemStack stack, int index, Direction side) {
-        if (!inventoryIn.canPlaceItem(index, stack)) {
-            return false;
-        } else {
-            return !(inventoryIn instanceof WorldlyContainer) || ((WorldlyContainer) inventoryIn).canPlaceItemThroughFace(index, stack, side);
-        }
+    private static boolean canInsertItemInSlot(Container inventoryIn, ItemStack stack, int index, @Nullable Direction side) {
+        if (!inventoryIn.canPlaceItem(index, stack)) return false;
+        return !(inventoryIn instanceof WorldlyContainer) || ((WorldlyContainer) inventoryIn).canPlaceItemThroughFace(index, stack, side);
     }
 
     private static boolean canCombine(ItemStack stack1, ItemStack stack2) {
-        if (stack1.getItem() != stack2.getItem()) {
-            return false;
-        } else if (stack1.getDamageValue() != stack2.getDamageValue()) {
-            return false;
-        } else if (stack1.getCount() > stack1.getMaxStackSize()) {
-            return false;
-        } else {
-            return ItemStack.tagMatches(stack1, stack2);
-        }
+        return stack1.getCount() <= stack1.getMaxStackSize() && ItemStack.isSameItemSameComponents(stack1, stack2);
     }
 
     private static ItemStack insertStack(Container destination, ItemStack stack, int index) {
@@ -133,11 +123,9 @@ public class StickyBasketBlockEntity extends RandomizableContainerBlockEntity im
             }
 
             if (flag) {
-                if (isDestinationEmpty && destination instanceof BasketBlockEntity) {
-                    BasketBlockEntity firstBasket = (BasketBlockEntity) destination;
+                if (isDestinationEmpty && destination instanceof BasketBlockEntity firstBasket) {
                     if (!firstBasket.mayTransfer()) {
                         int k = 0;
-
                         firstBasket.setTransferCooldown(8 - k);
                     }
                 }

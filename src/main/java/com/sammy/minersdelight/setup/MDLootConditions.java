@@ -4,7 +4,7 @@ import com.sammy.minersdelight.*;
 import com.sammy.minersdelight.content.loot.*;
 import net.minecraft.core.*;
 import net.minecraft.world.level.storage.loot.predicates.*;
-import net.minecraftforge.registries.*;
+import net.neoforged.registries.*;
 
 public class MDLootConditions {
 	public static final DeferredRegister<LootItemConditionType> LOOT_CONDITIONS = DeferredRegister.create(Registry.LOOT_CONDITION_TYPE.key(), MinersDelightMod.MODID);

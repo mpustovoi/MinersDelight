@@ -10,7 +10,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.*;
 import net.minecraft.world.level.gameevent.*;
-import net.minecraftforge.fml.event.lifecycle.*;
+import net.neoforged.fml.event.lifecycle.*;
 
 import static net.minecraft.core.cauldron.CauldronInteraction.*;
 
@@ -18,24 +18,38 @@ public class MDCauldronInteractions {
 
     public static void addCauldronInteractions(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            EMPTY.put(MDItems.WATER_CUP.get(), (p_175683_, p_175684_, p_175685_, p_175686_, p_175687_, p_175688_) -> emptyCup(p_175684_, p_175685_, p_175686_, p_175687_, p_175688_, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.BUCKET_EMPTY));
-            EMPTY.put(MDItems.POWDERED_SNOW_CUP.get(), (p_175669_, p_175670_, p_175671_, p_175672_, p_175673_, p_175674_) -> emptyCup(p_175670_, p_175671_, p_175672_, p_175673_, p_175674_, Blocks.POWDER_SNOW_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.BUCKET_EMPTY_POWDER_SNOW));
 
-            WATER.put(MDItems.COPPER_CUP.get(), (p_175725_, p_175726_, p_175727_, p_175728_, p_175729_, p_175730_) -> fillBucket(p_175725_, p_175726_, p_175727_, p_175728_, p_175729_, p_175730_, MDItems.WATER_CUP.asStack(), (p_175660_) -> p_175660_.getValue(LayeredCauldronBlock.LEVEL) == 3, SoundEvents.BUCKET_FILL));
-            POWDER_SNOW.put(MDItems.COPPER_CUP.get(), (p_175690_, p_175691_, p_175692_, p_175693_, p_175694_, p_175695_) -> fillBucket(p_175690_, p_175691_, p_175692_, p_175693_, p_175694_, p_175695_, MDItems.POWDERED_SNOW_CUP.asStack(), (p_175627_) -> p_175627_.getValue(LayeredCauldronBlock.LEVEL) == 3, SoundEvents.BUCKET_FILL_POWDER_SNOW));
+            WATER.map().put(MDItems.COPPER_CUP.get(), (state, level, pos, player, hand, stack) ->
+                    fillBucket(state, level, pos, player, hand, stack, new ItemStack(MDItems.WATER_CUP.get()),
+                            s -> s.getValue(LayeredCauldronBlock.LEVEL) == 3, SoundEvents.BUCKET_FILL));
+            POWDER_SNOW.map().put(MDItems.COPPER_CUP.get(), (state, level, pos, player, hand, stack) ->
+                    fillBucket(state, level, pos, player, hand, stack, new ItemStack(MDItems.POWDERED_SNOW_CUP.get()),
+                            s -> s.getValue(LayeredCauldronBlock.LEVEL) == 3, SoundEvents.BUCKET_FILL_POWDER_SNOW));
+
+            EMPTY.map().put(MDItems.WATER_CUP.get(), (state, level, pos, player, hand, stack) -> emptyCup(
+                    level, pos, player, hand, stack,
+                    Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3),
+                    SoundEvents.BUCKET_EMPTY
+            ));
+            EMPTY.map().put(MDItems.POWDERED_SNOW_CUP.get(), (state, level, pos, player, hand, stack) -> emptyCup(
+                    level, pos, player, hand, stack,
+                    Blocks.POWDER_SNOW_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3),
+                    SoundEvents.BUCKET_EMPTY_POWDER_SNOW
+            ));
         });
     }
 
-    static InteractionResult emptyCup(Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, ItemStack pFilledStack, BlockState pState, SoundEvent pEmptySound) {
-        if (!pLevel.isClientSide) {
-            Item item = pFilledStack.getItem();
-            pPlayer.setItemInHand(pHand, ItemUtils.createFilledResult(pFilledStack, pPlayer, MDItems.COPPER_CUP.asStack()));
-            pPlayer.awardStat(Stats.FILL_CAULDRON);
-            pPlayer.awardStat(Stats.ITEM_USED.get(item));
-            pLevel.setBlockAndUpdate(pPos, pState);
-            pLevel.playSound(null, pPos, pEmptySound, SoundSource.BLOCKS, 1.0F, 1.0F);
-            pLevel.gameEvent(null, GameEvent.FLUID_PLACE, pPos);
+    static ItemInteractionResult emptyCup(Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack filledStack, BlockState state, SoundEvent emptySound) {
+        if (!level.isClientSide) {
+            Item item = filledStack.getItem();
+            player.setItemInHand(hand, ItemUtils.createFilledResult(filledStack, player, MDItems.COPPER_CUP.get().getDefaultInstance()));
+            player.awardStat(Stats.FILL_CAULDRON);
+            player.awardStat(Stats.ITEM_USED.get(item));
+            level.setBlockAndUpdate(pos, state);
+            level.playSound(null, pos, emptySound, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+
+        return ItemInteractionResult.sidedSuccess(level.isClientSide);
     }
 }

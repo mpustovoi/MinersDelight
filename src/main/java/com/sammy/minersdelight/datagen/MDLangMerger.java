@@ -1,4 +1,4 @@
-package com.sammy.minersdelight.data;
+package com.sammy.minersdelight.datagen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +9,7 @@ import com.google.gson.stream.JsonReader;
 import com.sammy.minersdelight.MinersDelightMod;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.common.data.LanguageProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
