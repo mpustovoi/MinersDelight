@@ -2,11 +2,12 @@ package com.sammy.minersdelight.content.block.copper_pot;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.items.IItemHandler;
-import net.neoforged.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class CopperPotResultSlot extends SlotItemHandler {
@@ -49,10 +50,10 @@ public class CopperPotResultSlot extends SlotItemHandler {
 
 	@Override
 	protected void checkTakeAchievements(ItemStack stack) {
-		stack.onCraftedBy(this.player.level, this.player, this.removeCount);
+		stack.onCraftedBy(this.player.level(), this.player, this.removeCount);
 
-		if (!this.player.level.isClientSide) {
-			tileEntity.awardUsedRecipes(this.player);
+		if (!this.player.level().isClientSide) {
+			tileEntity.awardUsedRecipes(this.player, List.of(stack));
 		}
 
 		this.removeCount = 0;
