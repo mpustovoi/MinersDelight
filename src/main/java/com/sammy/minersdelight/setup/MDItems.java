@@ -62,6 +62,8 @@ public class MDItems {
         return new CopperCupFoodItem(properties);
     }
 
+    public static final DeferredHolder<Item, BlockItem> COPPER_POT = register("copper_pot", DEFAULT_PROPERTIES(), (p) -> new BlockItem(MDBlocks.COPPER_POT.get(), p));
+
     public static final DeferredHolder<Item, CopperCupItem> COPPER_CUP = register("copper_cup", CUP_PROPERTIES(), (p) -> new CopperCupItem(Fluids.EMPTY, p));
     public static final DeferredHolder<Item, CopperCupItem> WATER_CUP = register("water_cup", CUP_PROPERTIES().stacksTo(1), (p) -> new CopperCupItem(Fluids.WATER, p));
     public static final DeferredHolder<Item, MilkCupItem> MILK_CUP = register("milk_cup", CUP_PROPERTIES().stacksTo(1), MilkCupItem::new);
@@ -84,6 +86,7 @@ public class MDItems {
     public static final DeferredHolder<Item, Item> BAKED_TENTACLES = register("baked_tentacles", MDFoodValues.BAKED_TENTACLES);
     public static final DeferredHolder<Item, Item> IMPROVISED_BARBECUE_STICK = register("improvised_barbecue_stick", MDFoodValues.IMPROVISED_BARBECUE_STICK);
     public static final DeferredHolder<Item, Item> PASTA_WITH_VEGGIEBALLS = register("pasta_with_veggieballs", MDFoodValues.PASTA_WITH_VEGGIEBALLS);
+    public static final DeferredHolder<Item, Item> STUFFED_SQUID = register("stuffed_squid", DEFAULT_PROPERTIES().stacksTo(1), p -> new BlockItem(MDBlocks.STUFFED_SQUID.get(), p));
 
     public static final DeferredHolder<Item, ConsumableItem> CAVE_SOUP = register("cave_soup", MDFoodValues.CAVE_SOUP, MDItems::bowlItem);
     public static final DeferredHolder<Item, ConsumableItem> BOWL_OF_STUFFED_SQUID = register("bowl_of_stuffed_squid", MDFoodValues.BOWL_OF_STUFFED_SQUID, MDItems::bowlItem);

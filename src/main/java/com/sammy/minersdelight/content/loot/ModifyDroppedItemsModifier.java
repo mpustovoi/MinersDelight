@@ -17,20 +17,20 @@ import java.util.function.Supplier;
 public class ModifyDroppedItemsModifier extends LootModifier {
 	public static final Supplier<MapCodec<ModifyDroppedItemsModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec((inst) -> codecStart(inst)
 			.and(inst.group(
-					Codec.BOOL.optionalFieldOf("removeOriginalLoot", false).forGetter((m) -> m.removeOriginalLoot),
+					Codec.BOOL.optionalFieldOf("replaceOriginal", false).forGetter((m) -> m.replaceOriginal),
 					BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter((m) -> m.item),
 					Codec.INT.optionalFieldOf("min", 0).forGetter((m) -> m.min),
 					Codec.INT.optionalFieldOf("max", 1).forGetter((m) -> m.max)))
 			.apply(inst, ModifyDroppedItemsModifier::new)));
 
-	private final boolean removeOriginalLoot;
+	private final boolean replaceOriginal;
 	private final Item item;
 	private final int min;
 	private final int max;
 
-	protected ModifyDroppedItemsModifier(LootItemCondition[] conditionsIn, boolean removeOriginalLoot, Item item, int min, int max) {
+	protected ModifyDroppedItemsModifier(LootItemCondition[] conditionsIn, boolean replaceOriginal, Item item, int min, int max) {
 		super(conditionsIn);
-        this.removeOriginalLoot = removeOriginalLoot;
+        this.replaceOriginal = replaceOriginal;
         this.item = item;
 		this.min = min;
 		this.max = max;
@@ -39,7 +39,7 @@ public class ModifyDroppedItemsModifier extends LootModifier {
 	@Nonnull
 	@Override
 	protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-		if (removeOriginalLoot) {
+		if (replaceOriginal) {
 			generatedLoot.clear();
 		}
 		ItemStack addedStack = new ItemStack(item, Mth.nextInt(context.getRandom(), min, max));

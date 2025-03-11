@@ -4,7 +4,6 @@ import com.sammy.minersdelight.*;
 import net.minecraft.core.registries.*;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.*;
-import net.minecraft.server.packs.resources.*;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.*;
 
@@ -16,6 +15,6 @@ public class MDCreativeTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup." + MinersDelightMod.MODID))
                     .withTabsBefore(ResourceLocation.parse("farmersdelight:farmersdelight"))
-                    .icon(() -> ItemRegistry.SPIRIT_ALTAR.get().getDefaultInstance()).build()
+                    .icon(() -> MDItems.COPPER_POT.get().getDefaultInstance()).build()
     );
 }

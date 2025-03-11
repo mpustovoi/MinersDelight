@@ -11,7 +11,5 @@ import java.util.function.*;
 public class MDLootModifiers {
 
 	public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MinersDelightMod.MODID);
-	public static final Supplier<MapCodec<? extends IGlobalLootModifier>> ADD_ITEMS = LOOT_MODIFIERS.register("add_items", ModifyDroppedItemsModifier.CODEC);
-	public static final Supplier<MapCodec<? extends IGlobalLootModifier>> REPLACE_ITEMS = LOOT_MODIFIERS.register("replace_items", ReplaceDroppedLootModifier.Serializer::new);
-
+	public static final Supplier<MapCodec<? extends IGlobalLootModifier>> MODIFY_DROPS = LOOT_MODIFIERS.register("modify_drops", ModifyDroppedItemsModifier.CODEC);
 }

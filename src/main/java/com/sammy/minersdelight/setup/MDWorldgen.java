@@ -1,6 +1,5 @@
 package com.sammy.minersdelight.setup;
 
-import com.google.common.collect.ImmutableList;
 import com.sammy.minersdelight.MinersDelightMod;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
@@ -12,16 +11,12 @@ import net.minecraft.world.level.levelgen.feature.configurations.*;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.registries.DeferredRegister;
-import net.neoforged.registries.ForgeRegistries;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid= MinersDelightMod.MODID, bus= Mod.EventBusSubscriber.Bus.MOD)
 public class MDWorldgen {
     public static final class ConfiguredFeatures {
-        public static final Holder<ConfiguredFeature<RandomPatchConfiguration, ?>> PATCH_CAVE_CARROT = FeatureUtils.register("patch_cave_carrot", Feature.RANDOM_PATCH, FeatureUtils.simplePatchConfiguration(Feature.SIMPLE_BLOCK, new SimpleBlockConfiguration(BlockStateProvider.simple(MDBlocks.WILD_CAVE_CARROTS.getDefaultState()))));
-
+        public static final Holder<ConfiguredFeature<RandomPatchConfiguration, ?>> PATCH_CAVE_CARROT = FeatureUtils.register("patch_cave_carrot", Feature.RANDOM_PATCH, FeatureUtils.simplePatchConfiguration(Feature.SIMPLE_BLOCK, new SimpleBlockConfiguration(BlockStateProvider.simple(MDBlocks.WILD_CAVE_CARROTS.get().defaultBlockState()))));
     }
 
     public static final class PlacedFeatures {
