@@ -1,10 +1,11 @@
 package com.sammy.minersdelight.content.block.copper_pot;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.sammy.minersdelight.MinersDelightMod;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -15,7 +16,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import vectorwing.farmersdelight.FarmersDelight;
 import vectorwing.farmersdelight.common.Configuration;
 import vectorwing.farmersdelight.common.utility.TextUtils;
 
@@ -27,7 +27,7 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class CopperPotScreen extends AbstractContainerScreen<CopperPotMenu> implements RecipeUpdateListener {
-	private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation("textures/gui/recipe_button.png");
+	private static final WidgetSprites RECIPE_BUTTON = new WidgetSprites(ResourceLocation.withDefaultNamespace("recipe_book/button"), ResourceLocation.withDefaultNamespace("recipe_book/button"));
 	private static final ResourceLocation BACKGROUND_TEXTURE = MinersDelightMod.path("textures/gui/copper_pot.png");
 	private static final Rectangle HEAT_ICON = new Rectangle(49, 57, 17, 15);
 	private static final Rectangle PROGRESS_ARROW = new Rectangle(78, 27, 0, 17);
@@ -47,11 +47,11 @@ public class CopperPotScreen extends AbstractContainerScreen<CopperPotMenu> impl
 		this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.menu);
 		this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
 		if (Configuration.ENABLE_RECIPE_BOOK_COOKING_POT.get()) {
-			this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) ->
+			this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18, RECIPE_BUTTON, (button) ->
 			{
 				this.recipeBookComponent.toggleVisibility();
 				this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-				((ImageButton) button).setPosition(this.leftPos + 5, this.height / 2 - 49);
+				button.setPosition(this.leftPos + 5, this.height / 2 - 49);
 			}));
 		} else {
 			this.recipeBookComponent.hide();
@@ -68,76 +68,76 @@ public class CopperPotScreen extends AbstractContainerScreen<CopperPotMenu> impl
 	}
 
 	@Override
-	public void render(PoseStack ms, final int mouseX, final int mouseY, float partialTicks) {
-		this.renderBackground(ms);
+	public void render(GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
+		this.renderBackground(graphics, mouseX, mouseY, partialTicks);
 
 		if (this.recipeBookComponent.isVisible() && this.widthTooNarrow) {
-			this.renderBg(ms, partialTicks, mouseX, mouseY);
-			this.recipeBookComponent.render(ms, mouseX, mouseY, partialTicks);
+			this.renderBg(graphics, partialTicks, mouseX, mouseY);
+			this.recipeBookComponent.render(graphics, mouseX, mouseY, partialTicks);
 		} else {
-			this.recipeBookComponent.render(ms, mouseX, mouseY, partialTicks);
-			super.render(ms, mouseX, mouseY, partialTicks);
-			this.recipeBookComponent.renderGhostRecipe(ms, this.leftPos, this.topPos, false, partialTicks);
+			this.recipeBookComponent.render(graphics, mouseX, mouseY, partialTicks);
+			super.render(graphics, mouseX, mouseY, partialTicks);
+			this.recipeBookComponent.renderGhostRecipe(graphics, this.leftPos, this.topPos, false, partialTicks);
 		}
 
-		this.renderMealDisplayTooltip(ms, mouseX, mouseY);
-		this.renderHeatIndicatorTooltip(ms, mouseX, mouseY);
-		this.recipeBookComponent.renderTooltip(ms, this.leftPos, this.topPos, mouseX, mouseY);
+		this.renderMealDisplayTooltip(graphics, mouseX, mouseY);
+		this.renderHeatIndicatorTooltip(graphics, mouseX, mouseY);
+		this.recipeBookComponent.renderTooltip(graphics, this.leftPos, this.topPos, mouseX, mouseY);
 	}
 
-	private void renderHeatIndicatorTooltip(PoseStack ms, int mouseX, int mouseY) {
+	private void renderHeatIndicatorTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (this.isHovering(HEAT_ICON.x, HEAT_ICON.y, HEAT_ICON.width, HEAT_ICON.height, mouseX, mouseY)) {
 			List<Component> tooltip = new ArrayList<>();
 			String key = "container.cooking_pot." + (this.menu.isHeated() ? "heated" : "not_heated");
 			tooltip.add(TextUtils.getTranslation(key, menu));
-			this.renderComponentTooltip(ms, tooltip, mouseX, mouseY);
+			graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
 		}
 	}
 
-	protected void renderMealDisplayTooltip(PoseStack ms, int mouseX, int mouseY) {
+	protected void renderMealDisplayTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (this.minecraft != null && this.minecraft.player != null && this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
 			if (this.hoveredSlot.index == 6) {
 				List<Component> tooltip = new ArrayList<>();
 
 				ItemStack mealStack = this.hoveredSlot.getItem();
-				tooltip.add(((MutableComponent) mealStack.getItem().getDescription()).withStyle(mealStack.getRarity().color));
+				tooltip.add(((MutableComponent) mealStack.getItem().getDescription()).withStyle(mealStack.getRarity().color()));
 
 				ItemStack containerStack = this.menu.tileEntity.getContainer();
 				String container = !containerStack.isEmpty() ? containerStack.getItem().getDescription().getString() : "";
 
 				tooltip.add(TextUtils.getTranslation("container.cooking_pot.served_on", container).withStyle(ChatFormatting.GRAY));
 
-				this.renderComponentTooltip(ms, tooltip, mouseX, mouseY);
+				graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
 			} else {
-				this.renderTooltip(ms, this.hoveredSlot.getItem(), mouseX, mouseY);
+				graphics.renderTooltip(font, this.hoveredSlot.getItem(), mouseX, mouseY);
 			}
 		}
 	}
 
 	@Override
-	protected void renderLabels(PoseStack ms, int mouseX, int mouseY) {
-		super.renderLabels(ms, mouseX, mouseY);
-		this.font.draw(ms, this.playerInventoryTitle, 8.0f, (float) (this.imageHeight - 96 + 2), 4210752);
+	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+		super.renderLabels(graphics, mouseX, mouseY);
+		graphics.drawString(font, this.playerInventoryTitle, 8, (this.imageHeight - 96 + 2), 4210752, false);
 	}
 
 	@Override
-	protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
 		// Render UI background
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 		if (this.minecraft == null)
 			return;
 
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-		this.blit(ms, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(BACKGROUND_TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
 		// Render heat icon
 		if (this.menu.isHeated()) {
-			this.blit(ms, this.leftPos + HEAT_ICON.x, this.topPos + HEAT_ICON.y, 176, 0, HEAT_ICON.width, HEAT_ICON.height);
+			graphics.blit(BACKGROUND_TEXTURE, this.leftPos + HEAT_ICON.x, this.topPos + HEAT_ICON.y, 176, 0, HEAT_ICON.width, HEAT_ICON.height);
 		}
 
 		// Render progress arrow
 		int l = this.menu.getCookProgressionScaled();
-		this.blit(ms, this.leftPos + PROGRESS_ARROW.x, this.topPos + PROGRESS_ARROW.y, 176, 15, l + 1, PROGRESS_ARROW.height);
+		graphics.blit(BACKGROUND_TEXTURE, this.leftPos + PROGRESS_ARROW.x, this.topPos + PROGRESS_ARROW.y, 176, 15, l + 1, PROGRESS_ARROW.height);
 	}
 
 	@Override
@@ -171,11 +171,11 @@ public class CopperPotScreen extends AbstractContainerScreen<CopperPotMenu> impl
 		this.recipeBookComponent.recipesUpdated();
 	}
 
-	@Override
-	public void removed() {
-		this.recipeBookComponent.removed();
-		super.removed();
-	}
+//	@Override
+//	public void removed() {
+//		this.recipeBookComponent.removed();
+//		super.removed();
+//	}
 
 	@Override
 	@Nonnull

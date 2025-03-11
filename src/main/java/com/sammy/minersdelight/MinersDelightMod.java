@@ -21,6 +21,7 @@ public class MinersDelightMod {
 		MDMenuTypes.MENU_TYPES.register(modEventBus);
 
 		modEventBus.addListener(MDCauldronInteractions::addCauldronInteractions);
+		modEventBus.addListener(MDBlockEntities::registerCapabilities);
 	}
 
 	public static ResourceLocation path(String path) {

@@ -1,38 +1,68 @@
 package com.sammy.minersdelight.content.block.copper_pot;
 
-import com.sammy.minersdelight.setup.*;
-import net.minecraft.*;
-import net.minecraft.core.*;
-import net.minecraft.nbt.*;
-import net.minecraft.network.chat.*;
-import net.minecraft.server.level.*;
-import net.minecraft.sounds.*;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.player.*;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.*;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.block.state.properties.*;
-import net.minecraft.world.level.material.*;
-import net.minecraft.world.phys.*;
-import net.minecraft.world.phys.shapes.*;
-import net.neoforged.api.distmarker.*;
-import net.neoforged.data.loading.*;
-import net.neoforged.network.*;
-import vectorwing.farmersdelight.common.block.state.*;
-import vectorwing.farmersdelight.common.registry.*;
-import vectorwing.farmersdelight.common.tag.*;
-import vectorwing.farmersdelight.common.utility.*;
+import com.mojang.serialization.MapCodec;
+import com.sammy.minersdelight.setup.MDBlockEntities;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import vectorwing.farmersdelight.common.block.state.CookingPotSupport;
+import vectorwing.farmersdelight.common.registry.ModBlockEntityTypes;
+import vectorwing.farmersdelight.common.registry.ModSounds;
+import vectorwing.farmersdelight.common.tag.ModTags;
+import vectorwing.farmersdelight.common.utility.MathUtils;
+import vectorwing.farmersdelight.common.utility.TextUtils;
 
-import javax.annotation.*;
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+	public static final MapCodec<CopperPotBlock> CODEC = simpleCodec(CopperPotBlock::new);
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final EnumProperty<CookingPotSupport> SUPPORT = EnumProperty.create("support", CookingPotSupport.class);
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -41,13 +71,18 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 	protected static final VoxelShape SHAPE_WITH_TRAY = Shapes.or(SHAPE, Block.box(0.0D, -1.0D, 0.0D, 16.0D, 0.0D, 16.0D));
 
 	public CopperPotBlock(BlockBehaviour.Properties properties) {
-		super(DatagenModLoader.isRunningDataGen() ? properties.noDrops() : properties); //TODO: help);
+		super(DatagenModLoader.isRunningDataGen() ? properties.noLootTable() : properties); //TODO: help);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(SUPPORT, CookingPotSupport.NONE).setValue(WATERLOGGED, false));
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-		ItemStack heldStack = player.getItemInHand(hand);
+	protected MapCodec<? extends BaseEntityBlock> codec() {
+		return CODEC;
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level level, BlockPos pos,
+	                                          Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (heldStack.isEmpty() && player.isShiftKeyDown()) {
 			level.setBlockAndUpdate(pos, state.setValue(SUPPORT, state.getValue(SUPPORT).equals(CookingPotSupport.HANDLE)
 					? getTrayState(level, pos) : CookingPotSupport.HANDLE));
@@ -60,15 +95,40 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 					if (!player.getInventory().add(servingStack)) {
 						player.drop(servingStack, false);
 					}
-					level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+					level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
 				} else {
-					NetworkHooks.openGui((ServerPlayer) player, copperPotEntity, pos);
+					player.openMenu(copperPotEntity, pos);
 				}
 			}
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
-		return InteractionResult.SUCCESS;
+		return ItemInteractionResult.SUCCESS;
 	}
+
+//	@Override
+//	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+//		ItemStack heldStack = player.getItemInHand(hand);
+//		if (heldStack.isEmpty() && player.isShiftKeyDown()) {
+//			level.setBlockAndUpdate(pos, state.setValue(SUPPORT, state.getValue(SUPPORT).equals(CookingPotSupport.HANDLE)
+//					? getTrayState(level, pos) : CookingPotSupport.HANDLE));
+//			level.playSound(null, pos, SoundEvents.LANTERN_PLACE, SoundSource.BLOCKS, 0.7F, 1.0F);
+//		} else if (!level.isClientSide) {
+//			BlockEntity tileEntity = level.getBlockEntity(pos);
+//			if (tileEntity instanceof CopperPotBlockEntity copperPotEntity) {
+//				ItemStack servingStack = copperPotEntity.useHeldItemOnMeal(heldStack);
+//				if (servingStack != ItemStack.EMPTY) {
+//					if (!player.getInventory().add(servingStack)) {
+//						player.drop(servingStack, false);
+//					}
+//					level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+//				} else {
+//					player.openMenu(copperPotEntity, pos);
+//				}
+//			}
+//			return InteractionResult.SUCCESS;
+//		}
+//		return InteractionResult.SUCCESS;
+//	}
 
 	@Override
 	public RenderShape getRenderShape(BlockState pState) {
@@ -120,20 +180,28 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
-		ItemStack stack = super.getCloneItemStack(level, pos, state);
-		CopperPotBlockEntity copperPotEntity = (CopperPotBlockEntity) level.getBlockEntity(pos);
-		if (copperPotEntity != null) {
-			CompoundTag nbt = copperPotEntity.writeMeal(new CompoundTag());
-			if (!nbt.isEmpty()) {
-				stack.addTagElement("BlockEntityTag", nbt);
-			}
-			if (copperPotEntity.hasCustomName()) {
-				stack.setHoverName(copperPotEntity.getCustomName());
-			}
-		}
-		return stack;
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+		ItemStack itemstack = super.getCloneItemStack(level, pos, state);
+		level.getBlockEntity(pos, ModBlockEntityTypes.COOKING_POT.get()).ifPresent((blockEntity) ->
+				blockEntity.saveToItem(itemstack, level.registryAccess()));
+		return itemstack;
 	}
+
+//	@Override
+//	public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
+//		ItemStack stack = super.getCloneItemStack(level, pos, state);
+//		CopperPotBlockEntity copperPotEntity = (CopperPotBlockEntity) level.getBlockEntity(pos);
+//		if (copperPotEntity != null) {
+//			CompoundTag nbt = copperPotEntity.writeMeal(new CompoundTag());
+//			if (!nbt.isEmpty()) {
+//				stack.addTagElement("BlockEntityTag", nbt);
+//			}
+//			if (copperPotEntity.hasCustomName()) {
+//				stack.setHoverName(copperPotEntity.getCustomName());
+//			}
+//		}
+//		return stack;
+//	}
 
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
@@ -151,10 +219,9 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flagIn) {
-		super.appendHoverText(stack, level, tooltip, flagIn);
-		CompoundTag nbt = stack.getTagElement("BlockEntityTag");
-		ItemStack mealStack = CopperPotBlockEntity.getMealFromItem(stack);
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+		super.appendHoverText(stack, context, tooltip, tooltipFlag);
+		ItemStack mealStack = CopperPotBlockEntity.getMealFromItem(stack, context.registries());
 
 		if (!mealStack.isEmpty()) {
 			MutableComponent textServingsOf = mealStack.getCount() == 1
@@ -162,7 +229,7 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 					: TextUtils.getTranslation("tooltip.cooking_pot.many_servings", mealStack.getCount());
 			tooltip.add(textServingsOf.withStyle(ChatFormatting.GRAY));
 			MutableComponent textMealName = mealStack.getHoverName().copy();
-			tooltip.add(textMealName.withStyle(mealStack.getRarity().color));
+			tooltip.add(textMealName.withStyle(mealStack.getRarity().color()));
 		} else {
 			MutableComponent textEmpty = TextUtils.getTranslation("tooltip.cooking_pot.empty");
 			tooltip.add(textEmpty.withStyle(ChatFormatting.GRAY));
@@ -177,7 +244,7 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-		if (stack.hasCustomHoverName()) {
+		if (stack.has(DataComponents.CUSTOM_NAME)) {
 			BlockEntity tileEntity = level.getBlockEntity(pos);
 			if (tileEntity instanceof CopperPotBlockEntity) {
 				((CopperPotBlockEntity) tileEntity).setCustomName(stack.getHoverName());
@@ -187,7 +254,7 @@ public class CopperPotBlock extends BaseEntityBlock implements SimpleWaterlogged
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void animateTick(BlockState state, Level level, BlockPos pos, Random rand) {
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource rand) {
 		BlockEntity tileEntity = level.getBlockEntity(pos);
 		if (tileEntity instanceof CopperPotBlockEntity copperPotEntity && copperPotEntity.isHeated()) {
 			SoundEvent boilSound = !copperPotEntity.getMeal().isEmpty()

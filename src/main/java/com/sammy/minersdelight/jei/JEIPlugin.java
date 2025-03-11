@@ -4,6 +4,7 @@ import com.sammy.minersdelight.MinersDelightMod;
 import com.sammy.minersdelight.content.block.copper_pot.CopperPotMenu;
 import com.sammy.minersdelight.content.block.copper_pot.CopperPotScreen;
 import com.sammy.minersdelight.setup.MDBlocks;
+import com.sammy.minersdelight.setup.MDMenuTypes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.*;
@@ -11,10 +12,12 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
 import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 
 @JeiPlugin
@@ -23,7 +26,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class JEIPlugin implements IModPlugin
 {
-	private static final ResourceLocation ID = new ResourceLocation(MinersDelightMod.MODID, "jei_plugin");
+	private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MinersDelightMod.MODID, "jei_plugin");
 	private static final Minecraft MC = Minecraft.getInstance();
 
 	@Override
@@ -34,7 +37,8 @@ public class JEIPlugin implements IModPlugin
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
 		assert MC.level != null;
-		List<CookingPotRecipe> copperPotRecipes = MC.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COOKING.get());
+		List<CookingPotRecipe> copperPotRecipes = new ArrayList<>(MC.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COOKING.get()).stream()
+				.map(RecipeHolder::value).toList());
 
 		copperPotRecipes.removeIf(r -> r.getIngredients().stream().filter(i -> !i.isEmpty()).count() > 4);
 		registration.addRecipes(CopperPotCookingRecipeCategory.COOKING, copperPotRecipes);
@@ -52,7 +56,7 @@ public class JEIPlugin implements IModPlugin
 
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-		registration.addRecipeTransferHandler(CopperPotMenu.class, CopperPotCookingRecipeCategory.COOKING, 0, 4, 6, 36);
+		registration.addRecipeTransferHandler(CopperPotMenu.class, MDMenuTypes.COPPER_POT.get(), CopperPotCookingRecipeCategory.COOKING, 0, 6, 9, 36);
 	}
 
 	@Override

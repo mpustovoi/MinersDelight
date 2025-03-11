@@ -10,26 +10,33 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.RecipeBookMenu;
+import net.minecraft.world.inventory.RecipeBookType;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.items.ItemStackHandler;
-import net.neoforged.items.SlotItemHandler;
-import net.neoforged.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import vectorwing.farmersdelight.FarmersDelight;
 import vectorwing.farmersdelight.common.block.entity.container.CookingPotMealSlot;
+import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
 
 import java.util.Objects;
 
-public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper>
+public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper, CookingPotRecipe>
 {
 	//TODO: update this
-	public static final ResourceLocation EMPTY_CONTAINER_SLOT_CUP = new ResourceLocation(FarmersDelight.MODID, "item/empty_container_slot_bowl");
+	public static final ResourceLocation EMPTY_CONTAINER_SLOT_CUP = ResourceLocation.fromNamespaceAndPath(FarmersDelight.MODID, "item/empty_container_slot_bowl");
 
 	public final CopperPotBlockEntity tileEntity;
 	public final ItemStackHandler inventory;
@@ -42,7 +49,7 @@ public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper>
 		this.tileEntity = tileEntity;
 		this.inventory = tileEntity.getInventory();
 		this.cookingPotData = cookingPotDataIn;
-		this.level = playerInventory.player.level;
+		this.level = playerInventory.player.level();
 		this.canInteractWithCallable = ContainerLevelAccess.create(tileEntity.getLevel(), tileEntity.getBlockPos());
 
 		// Ingredient Slots - 2 Rows x 2 Columns
@@ -94,7 +101,7 @@ public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper>
 	private static CopperPotBlockEntity getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
 		Objects.requireNonNull(data, "data cannot be null");
-		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
 		if (tileAtPos instanceof CopperPotBlockEntity) {
 			return (CopperPotBlockEntity) tileAtPos;
 		}
@@ -180,8 +187,8 @@ public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper>
 	}
 
 	@Override
-	public boolean recipeMatches(Recipe<? super RecipeWrapper> recipe) {
-		return recipe.matches(tileEntity.createFakeRecipeWrapper(), level);
+	public boolean recipeMatches(RecipeHolder recipeHolder) {
+		return recipeHolder.value().matches(tileEntity.createFakeRecipeWrapper(), level);
 	}
 
 	@Override
@@ -206,7 +213,7 @@ public class CopperPotMenu extends RecipeBookMenu<RecipeWrapper>
 
 	@Override
 	public RecipeBookType getRecipeBookType() {
-		return FarmersDelight.RECIPE_TYPE_COOKING;
+		return RecipeBookType.valueOf("FARMERSDELIGHT_COOKING");
 	}
 
 	@Override
