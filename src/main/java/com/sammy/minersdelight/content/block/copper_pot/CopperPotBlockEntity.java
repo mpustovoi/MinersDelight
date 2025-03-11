@@ -474,7 +474,7 @@ public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvi
 	}
 
 	private boolean doesMealHaveContainer(ItemStack meal) {
-		return !mealContainerStack.isEmpty() || meal.hasContainerItem();
+		return !mealContainerStack.isEmpty() || meal.hasCraftingRemainingItem();
 	}
 
 	public boolean isContainerValid(ItemStack containerItem) {
@@ -482,7 +482,7 @@ public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvi
 		if (!mealContainerStack.isEmpty()) {
 			return ItemStack.isSameItemSameComponents(mealContainerStack, containerItem);
 		} else {
-			return ItemStack.isSameItemSameComponents(getMeal().getContainerItem(), containerItem);
+			return ItemStack.isSameItemSameComponents(getMeal().getCraftingRemainingItem(), containerItem);
 		}
 	}
 
