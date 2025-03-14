@@ -71,7 +71,7 @@ public class MDItems {
 
     public static final DeferredHolder<Item, ItemNameBlockItem> CAVE_CARROT = register("cave_carrot", MDFoodValues.CAVE_CARROT, p -> new ItemNameBlockItem(MDBlocks.CAVE_CARROTS.get(), p));
     public static final DeferredHolder<Item, Item> BAKED_CAVE_CARROT = register("baked_cave_carrot", MDFoodValues.BAKED_CAVE_CARROT);
-    public static final DeferredHolder<Item, Item> GOSSYPIUM = register("baked_cave_carrot", p -> new BlockItem(MDBlocks.GOSSYPIUM.get(), p));
+    public static final DeferredHolder<Item, Item> GOSSYPIUM = register("gossypium", p -> new BlockItem(MDBlocks.GOSSYPIUM.get(), p));
 
     public static final DeferredHolder<Item, Item> BAT_WING = register("bat_wing", MDFoodValues.BAT_WING);
     public static final DeferredHolder<Item, Item> SMOKED_BAT_WING = register("smoked_bat_wing", MDFoodValues.SMOKED_BAT_WING);

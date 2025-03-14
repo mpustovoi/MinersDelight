@@ -1,37 +1,36 @@
 package com.sammy.minersdelight.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.sammy.minersdelight.MinersDelightMod;
-import com.sammy.minersdelight.setup.MDBlocks;
-import com.sammy.minersdelight.setup.MDItems;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
+import com.sammy.minersdelight.*;
+import com.sammy.minersdelight.setup.*;
+import mezz.jei.api.constants.*;
+import mezz.jei.api.gui.builder.*;
+import mezz.jei.api.gui.drawable.*;
+import mezz.jei.api.gui.ingredient.*;
+import mezz.jei.api.helpers.*;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
-import vectorwing.farmersdelight.common.utility.TextUtils;
+import mezz.jei.api.recipe.*;
+import mezz.jei.api.recipe.category.*;
+import net.minecraft.*;
+import net.minecraft.client.gui.*;
+import net.minecraft.core.*;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.*;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.*;
+import vectorwing.farmersdelight.common.crafting.*;
+import vectorwing.farmersdelight.common.utility.*;
+import vectorwing.farmersdelight.integration.jei.*;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
+import javax.annotation.*;
+import java.util.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CopperPotCookingRecipeCategory implements IRecipeCategory<CookingPotRecipe> {
-	public static final RecipeType<CookingPotRecipe> COOKING = RecipeType.create("miners_delight", "cooking", CookingPotRecipe.class);
-
+public class CopperPotCookingRecipeCategory implements IRecipeCategory<CookingPotRecipe>
+{
 	protected final IDrawable heatIndicator;
+	protected final IDrawable timeIcon;
+	protected final IDrawable expIcon;
 	protected final IDrawableAnimated arrow;
 	private final Component title;
 	private final IDrawable background;
@@ -40,28 +39,18 @@ public class CopperPotCookingRecipeCategory implements IRecipeCategory<CookingPo
 	public CopperPotCookingRecipeCategory(IGuiHelper helper) {
 		title = TextUtils.getTranslation("jei.cooking");
 		ResourceLocation backgroundImage = MinersDelightMod.path("textures/gui/copper_pot.png");
-		background = helper.createDrawable(backgroundImage, 29, 16, 117, 57);
-		icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(MDBlocks.COPPER_POT.get()));
+		background = helper.createDrawable(backgroundImage, 29, 16, 116, 56);
+		icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(MDItems.COPPER_POT.get()));
 		heatIndicator = helper.createDrawable(backgroundImage, 176, 0, 17, 15);
-		arrow = helper.drawableBuilder(backgroundImage, 176, 15, 29, 17)
+		timeIcon = helper.createDrawable(backgroundImage, 176, 32, 8, 11);
+		expIcon = helper.createDrawable(backgroundImage, 176, 43, 9, 9);
+		arrow = helper.drawableBuilder(backgroundImage, 176, 15, 24, 17)
 				.buildAnimated(200, IDrawableAnimated.StartDirection.LEFT, false);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return this.getRecipeType().getUid();
-	}
-	
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends CookingPotRecipe> getRecipeClass() {
-		return this.getRecipeType().getRecipeClass();
 	}
 
 	@Override
 	public RecipeType<CookingPotRecipe> getRecipeType() {
-		return COOKING;
+		return FDRecipeTypes.COOKING;
 	}
 
 	@Override
@@ -80,38 +69,64 @@ public class CopperPotCookingRecipeCategory implements IRecipeCategory<CookingPo
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CookingPotRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, CookingPotRecipe recipe, IFocusGroup focusGroup) {
 		NonNullList<Ingredient> recipeIngredients = recipe.getIngredients();
+		ItemStack resultStack = RecipeUtils.getResultItem(recipe);
+		var data = resultStack.getItem().builtInRegistryHolder().getData(MDDataMaps.CUP_VARIANT);
+		if (data != null) {
+			ItemStack cupResultStack = new ItemStack(data.cupVariant(), resultStack.getCount());
+			cupResultStack.applyComponents(resultStack.getComponents());
+			resultStack = cupResultStack;
+		}
+		ItemStack containerStack = recipe.getOutputContainer();
 
 		int borderSlotSize = 18;
 		for (int row = 0; row < 2; ++row) {
-			for (int column = 0; column < 2; ++column) {
-				int inputIndex = row * 2 + column;
+			for (int column = 0; column < 3; ++column) {
+				int inputIndex = row * 3 + column;
 				if (inputIndex < recipeIngredients.size()) {
-					builder.addSlot(RecipeIngredientRole.INPUT, 11+column * borderSlotSize, 2+row * borderSlotSize).addItemStacks(Arrays.asList(recipeIngredients.get(inputIndex).getItems()));
+					builder.addSlot(RecipeIngredientRole.INPUT, (column * borderSlotSize) + 1, (row * borderSlotSize) + 1)
+							.addItemStacks(Arrays.asList(recipeIngredients.get(inputIndex).getItems()));
 				}
 			}
 		}
-		ItemStack resultStack = recipe.getResultItem();
-		boolean cupServed = CupConversionReloadListener.BOWL_TO_CUP.containsKey(resultStack.getItem());
-		ItemStack mealContainerStack = cupServed ? MDItems.COPPER_CUP.asStack() : recipe.getOutputContainer();
-		if (cupServed) {
-			ItemStack cupResultStack = new ItemStack(CupConversionReloadListener.BOWL_TO_CUP.get(resultStack.getItem()), resultStack.getCount());
-			cupResultStack.setTag(resultStack.getTag());
-			resultStack = cupResultStack;
-		}
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 86, 12).addItemStack(resultStack);
 
-		if (!mealContainerStack.isEmpty()) {
-			//Containers must be recognized as OUTPUT for JEI's builtin transfer handler to work
-			builder.addSlot(RecipeIngredientRole.OUTPUT, 54, 40).addItemStack(mealContainerStack);
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 10).addItemStack(resultStack);
+
+		if (!containerStack.isEmpty()) {
+			builder.addSlot(RecipeIngredientRole.CATALYST, 63, 39).addItemStack(containerStack);
 		}
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 86, 40).addItemStack(resultStack);
+
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 39).addItemStack(resultStack);
 	}
 
 	@Override
-	public void draw(CookingPotRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
-		arrow.draw(matrixStack, 48, 11);
-		heatIndicator.draw(matrixStack, 19, 40);
+	public void draw(CookingPotRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		arrow.draw(guiGraphics, 60, 9);
+		heatIndicator.draw(guiGraphics, 18, 39);
+		timeIcon.draw(guiGraphics, 64, 2);
+		if (recipe.getExperience() > 0) {
+			expIcon.draw(guiGraphics, 63, 21);
+		}
+	}
+
+	@Override
+	public List<Component> getTooltipStrings(CookingPotRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		if (ClientRenderUtils.isCursorInsideBounds(61, 2, 22, 28, mouseX, mouseY)) {
+			List<Component> tooltipStrings = new ArrayList<>();
+
+			int cookTime = recipe.getCookTime();
+			if (cookTime > 0) {
+				int cookTimeSeconds = cookTime / 20;
+				tooltipStrings.add(Component.translatable("gui.jei.category.smelting.time.seconds", cookTimeSeconds));
+			}
+			float experience = recipe.getExperience();
+			if (experience > 0) {
+				tooltipStrings.add(Component.translatable("gui.jei.category.smelting.experience", experience));
+			}
+
+			return tooltipStrings;
+		}
+		return Collections.emptyList();
 	}
 }

@@ -1,27 +1,31 @@
 package com.sammy.minersdelight.content.block.copper_pot;
 
-import com.sammy.minersdelight.setup.MDItems;
-import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import vectorwing.farmersdelight.FarmersDelight;
-import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
-import vectorwing.farmersdelight.common.utility.TextUtils;
+import com.sammy.minersdelight.setup.*;
+import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.screens.recipebook.*;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.*;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.*;
+import vectorwing.farmersdelight.*;
+import vectorwing.farmersdelight.common.crafting.*;
+import vectorwing.farmersdelight.common.utility.*;
 
-import javax.annotation.Nonnull;
-import java.util.List;
+import javax.annotation.*;
+import java.util.*;
 
 public class CopperPotRecipeBookComponent extends RecipeBookComponent
 {
-	protected static final ResourceLocation RECIPE_BOOK_BUTTONS = new ResourceLocation(FarmersDelight.MODID, "textures/gui/recipe_book_buttons.png");
+	protected static final WidgetSprites RECIPE_BOOK_BUTTONS = new WidgetSprites(
+			ResourceLocation.fromNamespaceAndPath(FarmersDelight.MODID, "recipe_book/cooking_pot_enabled"),
+			ResourceLocation.fromNamespaceAndPath(FarmersDelight.MODID, "recipe_book/cooking_pot_disabled"),
+			ResourceLocation.fromNamespaceAndPath(FarmersDelight.MODID, "recipe_book/cooking_pot_enabled_highlighted"),
+			ResourceLocation.fromNamespaceAndPath(FarmersDelight.MODID, "recipe_book/cooking_pot_disabled_highlighted"));
 
 	@Override
 	protected void initFilterButtonTextures() {
-		this.filterButton.initTextureValues(0, 0, 28, 18, RECIPE_BOOK_BUTTONS);
+		this.filterButton.initTextureValues(RECIPE_BOOK_BUTTONS);
 	}
 
 	public void hide() {
@@ -35,26 +39,26 @@ public class CopperPotRecipeBookComponent extends RecipeBookComponent
 	}
 
 	@Override
-	public void setupGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-		ItemStack resultStack = recipe.getResultItem();
-		boolean cupServed = CupConversionReloadListener.BOWL_TO_CUP.containsKey(resultStack.getItem());
-		if (cupServed) {
-			ItemStack cupResultStack = new ItemStack(CupConversionReloadListener.BOWL_TO_CUP.get(resultStack.getItem()), resultStack.getCount());
-			cupResultStack.setTag(resultStack.getTag());
+	public void setupGhostRecipe(RecipeHolder<?> recipe, List<Slot> slots) {
+		ItemStack resultStack = recipe.value().getResultItem(this.minecraft.level.registryAccess());
+		var data = resultStack.getItem().builtInRegistryHolder().getData(MDDataMaps.CUP_VARIANT);
+		if (data != null) {
+			ItemStack cupResultStack = new ItemStack(data.cupVariant(), resultStack.getCount());
+			cupResultStack.applyComponents(resultStack.getComponents());
 			resultStack = cupResultStack;
 		}
 		this.ghostRecipe.setRecipe(recipe);
-		if (slots.get(4).getItem().isEmpty()) {
-			this.ghostRecipe.addIngredient(Ingredient.of(resultStack), (slots.get(4)).x, (slots.get(4)).y);
+		if (slots.get(6).getItem().isEmpty()) {
+			this.ghostRecipe.addIngredient(Ingredient.of(resultStack), (slots.get(6)).x, (slots.get(6)).y);
 		}
 
-		if (recipe instanceof CookingPotRecipe cookingRecipe) {
-			ItemStack containerStack = cupServed ? MDItems.COPPER_CUP.asStack() : cookingRecipe.getOutputContainer();
+		if (recipe.value() instanceof CookingPotRecipe cookingRecipe) {
+			ItemStack containerStack = cookingRecipe.getOutputContainer();
 			if (!containerStack.isEmpty()) {
-				this.ghostRecipe.addIngredient(Ingredient.of(containerStack), (slots.get(5)).x, (slots.get(5)).y);
+				this.ghostRecipe.addIngredient(Ingredient.of(containerStack), (slots.get(7)).x, (slots.get(7)).y);
 			}
 		}
 
-		this.placeRecipe(this.menu.getGridWidth(), this.menu.getGridHeight(), this.menu.getResultSlotIndex(), recipe, recipe.getIngredients().iterator(), 0);
+		this.placeRecipe(this.menu.getGridWidth(), this.menu.getGridHeight(), this.menu.getResultSlotIndex(), recipe, recipe.value().getIngredients().iterator(), 0);
 	}
 }

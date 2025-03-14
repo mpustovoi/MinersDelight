@@ -25,13 +25,13 @@ public class MDBlocks {
     public static final Supplier<Block> STUFFED_SQUID = BLOCKS.register("stuffed_squid",
             () -> new StuffedSquidFeastBlock(LodestoneBlockProperties.copy(Blocks.CAKE).needsAxe()));
 
-    public static final Supplier<Block> WILD_CAVE_CARROTS = BLOCKS.register("wildcave_carrots",
+    public static final Supplier<Block> WILD_CAVE_CARROTS = BLOCKS.register("wild_cave_carrots",
             () -> new WildCaveCarrotBlock(LodestoneBlockProperties.copy(Blocks.TALL_GRASS).addTag(BlockTags.SMALL_FLOWERS).setCutoutRenderType()));
 
     public static final Supplier<Block> CAVE_CARROTS = BLOCKS.register("cave_carrots",
             () -> new CaveCarrotBlock(LodestoneBlockProperties.copy(Blocks.CARROTS).setCutoutRenderType()));
 
-    public static final Supplier<Block> CAVE_CARROT_CRATE = BLOCKS.register("cave_carrots",
+    public static final Supplier<Block> CAVE_CARROT_CRATE = BLOCKS.register("cave_carrot_crate",
             () -> new CaveCarrotBlock(LodestoneBlockProperties.copy(ModBlocks.CARROT_CRATE.get()).needsAxe()));
 
     public static final Supplier<Block> GOSSYPIUM = BLOCKS.register("gossypium",

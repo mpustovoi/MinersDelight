@@ -1,55 +1,39 @@
 package com.sammy.minersdelight.content.block.copper_pot;
 
-import com.google.common.collect.Lists;
-import com.sammy.minersdelight.setup.MDBlockEntities;
-import com.sammy.minersdelight.setup.MDBlocks;
-import com.sammy.minersdelight.setup.MDItems;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponentMap.Builder;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.Nameable;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.RecipeCraftingHolder;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
-import vectorwing.farmersdelight.common.block.CookingPotBlock;
-import vectorwing.farmersdelight.common.block.entity.HeatableBlockEntity;
-import vectorwing.farmersdelight.common.block.entity.SyncedBlockEntity;
-import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
-import vectorwing.farmersdelight.common.registry.ModParticleTypes;
-import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
+import com.google.common.collect.*;
+import com.sammy.minersdelight.setup.*;
+import it.unimi.dsi.fastutil.objects.*;
+import net.minecraft.core.*;
+import net.minecraft.core.HolderLookup.*;
+import net.minecraft.core.component.DataComponentMap.*;
+import net.minecraft.core.component.*;
+import net.minecraft.core.particles.*;
+import net.minecraft.nbt.*;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.*;
+import net.minecraft.server.level.*;
+import net.minecraft.util.*;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.*;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.*;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.state.*;
+import net.minecraft.world.phys.*;
+import net.neoforged.neoforge.items.*;
+import net.neoforged.neoforge.items.wrapper.*;
+import vectorwing.farmersdelight.common.block.*;
+import vectorwing.farmersdelight.common.block.entity.*;
+import vectorwing.farmersdelight.common.crafting.*;
+import vectorwing.farmersdelight.common.registry.*;
 import vectorwing.farmersdelight.common.utility.ItemUtils;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.*;
+import java.util.*;
 
 public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvider, HeatableBlockEntity, Nameable, RecipeCraftingHolder {
 	public static final int MEAL_DISPLAY_SLOT = 4;
@@ -300,9 +284,10 @@ public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvi
 	protected boolean canCook(CookingPotRecipe recipe) {
 		if (hasInput()) {
 			ItemStack resultStack = recipe.getResultItem(level.registryAccess());
-			if (CupConversionReloadListener.BOWL_TO_CUP.containsKey(resultStack.getItem())) {
-				ItemStack cupResultStack = new ItemStack(CupConversionReloadListener.BOWL_TO_CUP.get(resultStack.getItem()), resultStack.getCount());
-				cupResultStack.setTag(resultStack.getTag());
+			var data = resultStack.getItem().builtInRegistryHolder().getData(MDDataMaps.CUP_VARIANT);
+			if (data != null) {
+				ItemStack cupResultStack = new ItemStack(data.cupVariant(), resultStack.getCount());
+				cupResultStack.applyComponents(resultStack.getComponents());
 				resultStack = cupResultStack;
 			}
 			if (resultStack.isEmpty()) {
@@ -336,11 +321,12 @@ public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvi
 
 		cookTime = 0;
 		ItemStack resultStack = recipe.getResultItem(level.registryAccess());
-		boolean cupServed = CupConversionReloadListener.BOWL_TO_CUP.containsKey(resultStack.getItem());
-		mealContainerStack = cupServed ? MDItems.COPPER_CUP.asStack() : recipe.getOutputContainer();
+		var data = resultStack.getItem().builtInRegistryHolder().getData(MDDataMaps.CUP_VARIANT);
+		boolean cupServed = data != null;
+		mealContainerStack = cupServed ? MDItems.COPPER_CUP.get().getDefaultInstance() : recipe.getOutputContainer();
 		if (cupServed) {
-			ItemStack cupResultStack = new ItemStack(CupConversionReloadListener.BOWL_TO_CUP.get(resultStack.getItem()), resultStack.getCount());
-			cupResultStack.setTag(resultStack.getTag());
+			ItemStack cupResultStack = new ItemStack(data.cupVariant(), resultStack.getCount());
+			cupResultStack.applyComponents(resultStack.getComponents());
 			resultStack = cupResultStack;
 		}
 		ItemStack storedMealStack = inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
@@ -488,7 +474,7 @@ public class CopperPotBlockEntity extends SyncedBlockEntity implements MenuProvi
 
 	@Override
 	public Component getName() {
-		return customName != null ? customName : Component.translatable("miners_delight.container.cooking_pot");
+		return customName != null ? customName : Component.translatable("minersdelight.container.cooking_pot");
 	}
 
 	@Override

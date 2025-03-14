@@ -24,8 +24,6 @@ public class MDDataMapDatagen extends DataMapProvider {
                 .add(Holder.direct(Items.WATER_BUCKET), new CupConversionDataMap(MDItems.WATER_CUP), false)
                 .add(Holder.direct(Items.MILK_BUCKET), new CupConversionDataMap(MDItems.MILK_CUP), false)
                 .add(Holder.direct(Items.POWDER_SNOW_BUCKET), new CupConversionDataMap(MDItems.POWDERED_SNOW_CUP), false)
-
-
                 .add(Holder.direct(Items.BEETROOT_SOUP), new CupConversionDataMap(MDItems.BEETROOT_SOUP_CUP), false)
                 .add(Holder.direct(Items.MUSHROOM_STEW), new CupConversionDataMap(MDItems.MUSHROOM_STEW_CUP), false)
                 .add(Holder.direct(Items.RABBIT_STEW), new CupConversionDataMap(MDItems.RABBIT_STEW_CUP), false)

@@ -1,0 +1,23 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:emptying",
+  "ingredients": [
+    {
+      "item": "minersdelight:milk_cup"
+    }
+  ],
+  "results": [
+    {
+      "item": "minersdelight:copper_cup"
+    },
+    {
+      "fluid": "minecraft:milk",
+      "amount": 1000
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+
+{
+	"parent": "farmersdelight:block/basket",
+	"textures": {
+		"top": "minersdelight:block/sticky_basket_top",
+		"bottom": "minersdelight:block/sticky_basket_bottom",
+		"particle": "minersdelight:block/sticky_basket_bottom",
+		"side": "minersdelight:block/sticky_basket_side",
+		"handle": "minersdelight:block/sticky_basket_handle"
+	}
+}

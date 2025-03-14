@@ -131,7 +131,7 @@ public class MDRecipeProvider extends RecipeProvider {
                 .addIngredient(ModItems.TOMATO_SAUCE.get())
                 .unlockedByAnyIngredient(MDItems.CAVE_CARROT.get(), ModItems.RAW_PASTA.get(), ModItems.TOMATO_SAUCE.get())
                 .setRecipeBookTab(CookingPotRecipeBookTab.MEALS)
-                .build(recipeOutput, "miners_delight:cooking/pasta_with_veggieballs");
+                .build(recipeOutput, "minersdelight:cooking/pasta_with_veggieballs");
 
         CookingPotRecipeBuilder.cookingPotRecipe(MDItems.CAVE_SOUP.get(), 1, NORMAL_COOKING, MEDIUM_EXP)
                 .addIngredient(MDItems.CAVE_CARROT.get())
@@ -139,7 +139,7 @@ public class MDRecipeProvider extends RecipeProvider {
                 .addIngredient(Items.BROWN_MUSHROOM, 2)
                 .unlockedByAnyIngredient(MDItems.CAVE_CARROT.get(), Items.RED_MUSHROOM, Items.BROWN_MUSHROOM)
                 .setRecipeBookTab(CookingPotRecipeBookTab.MEALS)
-                .build(recipeOutput, "miners_delight:cooking/cave_soup");
+                .build(recipeOutput, "minersdelight:cooking/cave_soup");
 
         CookingPotRecipeBuilder.cookingPotRecipe(MDBlocks.STUFFED_SQUID.get(), 1, SLOW_COOKING, LARGE_EXP, Items.BOWL)
                 .addIngredient(Ingredient.of(MDItems.SQUID.get(), MDItems.GLOW_SQUID.get(), MDItems.BAKED_SQUID.get()))
@@ -149,29 +149,29 @@ public class MDRecipeProvider extends RecipeProvider {
                 .addIngredient(ModItems.ONION.get())
                 .unlockedByAnyIngredient(MDItems.SQUID.get(), MDItems.GLOW_SQUID.get(), MDItems.BAKED_SQUID.get())
                 .setRecipeBookTab(CookingPotRecipeBookTab.MEALS)
-                .build(recipeOutput, "miners_delight:cooking/stuffed_squid");
+                .build(recipeOutput, "minersdelight:cooking/stuffed_squid");
 
         CuttingBoardRecipeBuilder.cuttingRecipe(Ingredient.of(MDItems.BAT_WING.get()), Ingredient.of(MDItemTags.KNIVES_FD), Items.PHANTOM_MEMBRANE, 1)
                 .addResultWithChance(Items.PHANTOM_MEMBRANE, 0.5f, 2)
-                .build(recipeOutput, "miners_delight:cutting/bat_wing");
+                .build(recipeOutput, "minersdelight:cutting/bat_wing");
 
         CuttingBoardRecipeBuilder.cuttingRecipe(Ingredient.of(MDItems.SQUID.get()), Ingredient.of(MDItemTags.KNIVES_FD), MDItems.TENTACLES.get(), 3)
                 .addResultWithChance(MDItems.TENTACLES.get(), 0.5f)
                 .addResult(Items.INK_SAC)
                 .addResultWithChance(Items.INK_SAC, 0.5f, 2)
-                .build(recipeOutput, "miners_delight:cutting/squid");
+                .build(recipeOutput, "minersdelight:cutting/squid");
 
         CuttingBoardRecipeBuilder.cuttingRecipe(Ingredient.of(MDItems.GLOW_SQUID.get()), Ingredient.of(MDItemTags.KNIVES_FD), MDItems.TENTACLES.get(), 3)
                 .addResultWithChance(MDItems.TENTACLES.get(), 0.5f)
                 .addResult(Items.GLOW_INK_SAC)
                 .addResultWithChance(Items.GLOW_INK_SAC, 0.5f, 2)
-                .build(recipeOutput, "miners_delight:cutting/glow_squid");
+                .build(recipeOutput, "minersdelight:cutting/glow_squid");
 
 
         CuttingBoardRecipeBuilder.cuttingRecipe(Ingredient.of(MDBlocks.WILD_CAVE_CARROTS.get()), Ingredient.of(Tags.Items.TOOLS_SHEAR), MDBlocks.GOSSYPIUM.get(), 1)
                 .addResultWithChance(MDBlocks.GOSSYPIUM.get(), 0.5F, 1)
                 .addResult(MDItems.CAVE_CARROT.get())
                 .addResultWithChance(MDItems.CAVE_CARROT.get(), 0.5f, 2)
-                .build(recipeOutput, "miners_delight:cutting/wild_cave_carrot");
+                .build(recipeOutput, "minersdelight:cutting/wild_cave_carrot");
     }
 }

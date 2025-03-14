@@ -43,15 +43,13 @@ public class MDLangDatagen extends LanguageProvider {
 
     @Override
     public String getName() {
-        return "Malum Lang Entries";
+        return "Miners Delight Lang Datagen";
     }
 
     public String makeProper(String s) {
         s = s
                 .replaceAll("Of", "of")
-                .replaceAll("The", "the")
-                .replaceAll("Soul Stained", "Soulstained")
-                .replaceAll("Soul Hunter", "Soulhunter");
+                .replaceAll("The", "the");
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
