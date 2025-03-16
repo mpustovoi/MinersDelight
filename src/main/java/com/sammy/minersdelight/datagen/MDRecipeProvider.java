@@ -32,7 +32,7 @@ public class MDRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
-        shaped(RecipeCategory.FOOD, MDBlocks.COPPER_POT.get())
+        shaped(RecipeCategory.FOOD, MDItems.COPPER_POT.get())
                 .define('X', Tags.Items.INGOTS_COPPER)
                 .define('Y', Items.WOODEN_SHOVEL)
                 .define('Z', Ingredient.of(Items.WATER_BUCKET, MDItems.WATER_CUP.get()))
@@ -40,7 +40,7 @@ public class MDRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_copper", has(Tags.Items.INGOTS_COPPER))
                 .save(recipeOutput, MinersDelightMod.path("copper_pot"));
 
-        shaped(RecipeCategory.MISC, MDBlocks.STICKY_BASKET.get())
+        shaped(RecipeCategory.MISC, MDItems.STICKY_BASKET.get())
                 .define('X', Tags.Items.RODS_WOODEN)
                 .define('Y', Items.COBWEB)
                 .pattern("X X").pattern("Y Y").pattern("XYX")

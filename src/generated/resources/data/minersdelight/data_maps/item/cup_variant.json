@@ -1,0 +1,52 @@
+{
+  "values": {
+    "farmersdelight:baked_cod_stew": {
+      "cup_variant": "minersdelight:baked_cod_stew_cup"
+    },
+    "farmersdelight:beef_stew": {
+      "cup_variant": "minersdelight:beef_stew_cup"
+    },
+    "farmersdelight:chicken_soup": {
+      "cup_variant": "minersdelight:chicken_soup_cup"
+    },
+    "farmersdelight:fish_stew": {
+      "cup_variant": "minersdelight:fish_stew_cup"
+    },
+    "farmersdelight:hot_cocoa": {
+      "cup_variant": "minersdelight:hot_cocoa_cup"
+    },
+    "farmersdelight:noodle_soup": {
+      "cup_variant": "minersdelight:noodle_soup_cup"
+    },
+    "farmersdelight:pumpkin_soup": {
+      "cup_variant": "minersdelight:pumpkin_soup_cup"
+    },
+    "farmersdelight:vegetable_soup": {
+      "cup_variant": "minersdelight:vegetable_soup_cup"
+    },
+    "minecraft:beetroot_soup": {
+      "cup_variant": "minersdelight:beetroot_soup_cup"
+    },
+    "minecraft:bucket": {
+      "cup_variant": "minersdelight:copper_cup"
+    },
+    "minecraft:milk_bucket": {
+      "cup_variant": "minersdelight:milk_cup"
+    },
+    "minecraft:mushroom_stew": {
+      "cup_variant": "minersdelight:mushroom_stew_cup"
+    },
+    "minecraft:powder_snow_bucket": {
+      "cup_variant": "minersdelight:powder_snow_cup"
+    },
+    "minecraft:rabbit_stew": {
+      "cup_variant": "minersdelight:rabbit_stew_cup"
+    },
+    "minecraft:water_bucket": {
+      "cup_variant": "minersdelight:water_cup"
+    },
+    "minersdelight:cave_soup": {
+      "cup_variant": "minersdelight:cave_soup_cup"
+    }
+  }
+}

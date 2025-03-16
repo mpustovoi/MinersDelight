@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "X": {
+      "tag": "c:ingots/copper"
+    },
+    "Y": {
+      "item": "minecraft:wooden_shovel"
+    },
+    "Z": [
+      {
+        "item": "minecraft:water_bucket"
+      },
+      {
+        "item": "minersdelight:water_cup"
+      }
+    ]
+  },
+  "pattern": [
+    " Y ",
+    "XZX",
+    "XXX"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minersdelight:copper_pot"
+  }
+}

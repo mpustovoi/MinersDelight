@@ -17,6 +17,7 @@ public class MinersDelightMod {
 		MDBlocks.BLOCKS.register(modEventBus);
 		MDBlockEntities.BLOCK_ENTITIES.register(modEventBus);
 		MDItems.ITEMS.register(modEventBus);
+		MDCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
 		MDMenuTypes.MENU_TYPES.register(modEventBus);
 

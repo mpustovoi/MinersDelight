@@ -1,0 +1,13 @@
+{
+  "values": {
+    "minersdelight:baked_cave_carrot": {
+      "chance": 0.65
+    },
+    "minersdelight:cave_carrot": {
+      "chance": 0.65
+    },
+    "minersdelight:gossypium": {
+      "chance": 0.3
+    }
+  }
+}

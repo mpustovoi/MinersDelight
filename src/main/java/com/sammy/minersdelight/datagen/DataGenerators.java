@@ -26,5 +26,10 @@ public class DataGenerators {
         generator.addProvider(includeServer, new MDDataMapDatagen(output, provider));
         generator.addProvider(includeClient, new MDLangDatagen(output));
         generator.addProvider(includeClient, new MDRecipeProvider(output, provider));
+
+        var itemModels = new MDItemModels(output, helper);
+        var blockStates = new MDBlockStates(output, helper, itemModels);
+        generator.addProvider(includeClient, itemModels);
+        generator.addProvider(includeClient, blockStates);
     }
 }

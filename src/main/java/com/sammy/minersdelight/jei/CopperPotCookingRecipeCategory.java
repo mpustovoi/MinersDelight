@@ -28,6 +28,8 @@ import java.util.*;
 @MethodsReturnNonnullByDefault
 public class CopperPotCookingRecipeCategory implements IRecipeCategory<CookingPotRecipe>
 {
+	public static final RecipeType<CookingPotRecipe> COOKING = RecipeType.create(MinersDelightMod.MODID, "cooking", CookingPotRecipe.class);
+
 	protected final IDrawable heatIndicator;
 	protected final IDrawable timeIcon;
 	protected final IDrawable expIcon;
